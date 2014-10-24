@@ -1,0 +1,44 @@
+#! /bin/bash
+
+ORIG_W=`cat ORIG_RES | cut -d'x' -f1`
+ORIG_H=`cat ORIG_RES | cut -d'x' -f2`
+PORT_W=`cat PORT_RES | cut -d'x' -f1`
+PORT_H=`cat PORT_RES | cut -d'x' -f2`
+
+PY_S=twrp_fonts.py
+MEDIUM=./fonts/Roboto-Medium.ttf
+REGULAR=./fonts/Roboto-Regular.ttf
+MEDIUM_SIZES=$( echo 11 15 )
+REGULAR_SIZES=$( echo 9 11 13)
+
+if [ ! -e ./$PY_S ]
+then
+    echo "twrp_fonts.py missing!"
+    exit
+fi
+
+for i in $( echo $MEDIUM $REGULAR )
+do
+    if [ ! -e $i ]
+    then
+        echo "font file ${i} not found"
+        exit
+    fi
+done
+
+MEDIUM_FILE=$( echo `basename $MEDIUM` | cut -d'.' -f1 )
+REGULAR_FILE=$( echo `basename $REGULAR` | cut -d'.' -f1 )
+
+OUT_DIR="out"
+
+mkdir -p $OUT_DIR
+
+for i in $MEDIUM_SIZES
+do
+    ./$PY_S -s $i -o ./${OUT_DIR}/${MEDIUM_FILE}-${i}.dat ${MEDIUM}
+done
+
+for i in $REGULAR_SIZES
+do
+    ./$PY_S -s $i -o ${OUT_DIR}/${REGULAR_FILE}-${i}.dat ${REGULAR}
+done

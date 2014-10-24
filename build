@@ -1,0 +1,5 @@
+rm ui.zip
+EXC=$( cat .gitignore | tr '\n' ' ' )
+EXC=${EXC}+" .git .gitignore"
+zip ui.zip -r * -x $EXC
+adb push ui.zip /sdcard/TWRP/theme/ui.zip

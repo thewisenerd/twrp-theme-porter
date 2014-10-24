@@ -1,0 +1,29 @@
+#! /bin/bash
+
+ORIG_W=`cat ORIG_RES | cut -d'x' -f1`
+ORIG_H=`cat ORIG_RES | cut -d'x' -f2`
+PORT_W=`cat PORT_RES | cut -d'x' -f1`
+PORT_H=`cat PORT_RES | cut -d'x' -f2`
+
+#echo $ORIG_W:$ORIG_H::$PORT_W:$PORT_H
+
+if [ "$2" == "" ]
+then
+    echo "usage: valfix <w/h> <num>"
+    exit
+fi
+
+if [ "$1" == "w" ]
+then
+    value=$2
+    new_val=`perl -e "print int(($value / $ORIG_W * $PORT_W ) + 0.5)"`
+    echo $new_val | xclip -filter -sel clip
+elif [ "$1" == "h" ]
+then
+    value=$2
+    new_val=`perl -e "print int(($value / $ORIG_H * $PORT_H ) + 0.5)"`
+    echo $new_val | xclip -filter -sel clip
+else
+    echo "usage: valfix <w/h> <num>"
+    exit
+fi

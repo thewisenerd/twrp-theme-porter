@@ -1,0 +1,41 @@
+#! /bin/bash
+
+ORIG_W=`cat ORIG_RES | cut -d'x' -f1`
+ORIG_H=`cat ORIG_RES | cut -d'x' -f2`
+PORT_W=`cat PORT_RES | cut -d'x' -f1`
+PORT_H=`cat PORT_RES | cut -d'x' -f2`
+
+read_dom () {
+	local IFS=\/\>
+	read -d \< ENTITY CONTENT
+	local RET=$?
+	TAG_NAME=${ENTITY%% *}
+	ATTRIBUTES=${ENTITY#* }
+	return $RET
+}
+
+parse_dom () {
+	if [[ $TAG_NAME = "variable" ]] ; then
+		eval local $ATTRIBUTES
+		if [ $(echo $name | tail -c 3) == "_x" ] || [ $(echo $name | tail -c 3) == "_w" ] || [ $(echo $name | tail -c 7) == "_width" ]
+		then
+			new_val=`perl -e "print int(($value / $ORIG_W * $PORT_W ) + 0.5)"`
+		else
+			new_val=$value
+		fi
+		value=$new_val
+		if [ $(echo $name | tail -c 3) == "_y" ] || [ $(echo $name | tail -c 3) == "_h" ] || [ $(echo $name | tail -c 8) == "_height" ]
+		then
+			new_val=`perl -e "print int(($value / $ORIG_H * $PORT_H) + 0.5)"`
+		else
+			new_val=$value
+		fi
+		value=$new_val
+
+		echo "		<variable name=\"$name\" value=\"$new_val\" />"
+	fi
+}
+
+while read_dom; do
+	parse_dom
+done
